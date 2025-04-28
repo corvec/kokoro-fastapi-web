@@ -19,19 +19,24 @@ To begin using this interface, follow these steps:
     git clone https://github.com/corvec/kokoro-fastapi-web.git
     cd kokoro-fast-api-web
     ```
-   
-2. Install the required dependencies.
-   It's recommended to use a virtual environment, e.g., `venv` or `conda`.
+
+2. It's recommended, but not required, to use a virtual environment, e.g., `venv`, `conda`, or `uv`.
+   These instructions are for `venv` and may need to be adjusted if you're using Windows:
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate
+    ```
+
+3. Install the required dependencies.
     ```bash
     pip install -r requirements.txt
     ```
 
 
-3. Run the Gradio interface.
+4. Run the Gradio interface.
     ```bash
     python app.py
     ```
-
 
 ## Usage
 
@@ -41,12 +46,19 @@ To begin using this interface, follow these steps:
 4. Click the "Generate" button or press Enter to create the corresponding speech.
 5. The generated speech will be displayed as an audio output.
 
-## Code Structure
+## Env Vars
 
-The code is organized into two main components:
+This app will use the following env vars if they're present. None are required.
 
-- `tts`: This module contains the function responsible for interacting with the OpenAI-compatible API to generate speech.
-- `gradio_interface`: This module sets up the Gradio interface, including input fields, buttons, and the speech output.
+- `OPENAI_API_KEY`: Your OpenAI API key. Not generally relevant as Kokoro FastAPI doesn't require it.
+- `OPENAI_API_BASE`: The base URL for the OpenAI API. Point this to your server. By default it is set to `http://localhost:8880/v1`, which will work if you're running Kokoro locally.
+- `SERVER_URL`: That's the URL for this service. 
+  - Use `0.0.0.0` (the default) to expose the service on your local network.
+  - Use `127.0.0.1` to restrict access to your local machine.
+- `SERVER_PORT`: The port for the server. By default, it is set to `7860`, which is the default for Gradio.
+  You should change this if you're running something else on that port.
+- `SHARE`: If set to `true`, then Gradio will create a public link to the app.
+  - See https://www.gradio.app/guides/sharing-your-app#sharing-demos for more information.
 
 ## License
 
