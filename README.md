@@ -50,8 +50,9 @@ To begin using this interface, follow these steps:
 
 This app will use the following env vars if they're present. None are required.
 
-- `OPENAI_API_KEY`: Your OpenAI API key. Not generally relevant as Kokoro FastAPI doesn't require it.
-- `OPENAI_API_BASE_URL`: The base URL for the OpenAI API. Point this to your server. By default it is set to `http://localhost:8880/v1`, which will work if you're running Kokoro locally.
+- `OPENAI_API_KEY`: Provide the default OpenAI API key. Not generally relevant as Kokoro FastAPI doesn't require it.
+- `OPENAI_API_BASE_URL`: Provide the default base URL for the OpenAI-compatible API. Point this to your server. By default it is set to `http://localhost:8880/v1`, which will work if you're running Kokoro locally.
+- `DEFAULT_VOICE`: Provide the default voice. If you don't provide one, this will default to the first entry in the list.
 - `SERVER_URL`: That's the URL for this service. 
   - Use `0.0.0.0` (the default) to expose the service on your local network.
   - Use `127.0.0.1` to restrict access to your local machine.

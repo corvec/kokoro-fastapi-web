@@ -76,6 +76,7 @@ kokoro_voices = [
     "zm_yunxia",
     "zm_yunyang"
 ]
+default_voice = os.getenv("DEFAULT_VOICE", default=kokoro_voices[0])
 
 def tts(text, model, voice, api_key, base_url=None):
     if not api_key:
@@ -110,7 +111,7 @@ def gradio_interface():
             api_key = gr.Textbox(type='password', label='API Key', placeholder='Enter your OpenAI API key', value=default_api_key)
             base_url = gr.Textbox(label='API Base URL', placeholder='http://localhost:8880/v1', value=default_base_url)
             model = gr.Dropdown(choices=['tts-1','tts-1-hd'], label='Model', value='tts-1')
-            voice = gr.Dropdown(choices=kokoro_voices, label='Voice Options', value=kokoro_voices[0])
+            voice = gr.Dropdown(choices=kokoro_voices, label='Voice Options', value=default_voice)
 
         text = gr.Textbox(label="Input text", placeholder="Enter your text and then click on the 'Generate' button, or press the Enter key.")
         btn = gr.Button("Generate")
