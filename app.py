@@ -79,8 +79,9 @@ kokoro_voices = [
 default_voice = os.getenv("DEFAULT_VOICE", default=kokoro_voices[0])
 response_formats = ["mp3", "wav", "opus", "flac", "pcm"]
 default_audio_format = os.getenv("DEFAULT_AUDIO_FORMAT", default=response_formats[0])
+models=["kokoro", "tts-1", "tts-1-hd"]
 
-def tts(text, model, voice, response_format, api_key, base_url=None):
+def tts(text, model, voice, response_format, speed, api_key, base_url=None):
     if not api_key:
         raise gr.Error('Please enter your OpenAI API Key')
 
@@ -96,6 +97,7 @@ def tts(text, model, voice, response_format, api_key, base_url=None):
             voice=voice,
             input=text,
             response_format=response_format,
+            speed=speed,
         )
 
     except Exception as error:
@@ -113,16 +115,17 @@ def gradio_interface():
         with gr.Row(variant='panel'):
             api_key = gr.Textbox(type='password', label='API Key', placeholder='Enter your OpenAI API key', value=default_api_key)
             base_url = gr.Textbox(label='API Base URL', placeholder='http://localhost:8880/v1', value=default_base_url)
-            model = gr.Dropdown(choices=['tts-1','tts-1-hd'], label='Model', value='tts-1')
+            model = gr.Dropdown(choices=models, label='Model', value=models[0])
             voice = gr.Dropdown(choices=kokoro_voices, label='Voice Options', value=default_voice)
             response_format = gr.Dropdown(choices=response_formats, label='Response Format', value=default_audio_format)
+            speed = gr.Slider(minimum=0.5, maximum=4.0, step=0.1, label="Speed", value=1.0)
 
         text = gr.Textbox(label="Input text", placeholder="Enter your text and then click on the 'Generate' button, or press the Enter key.")
         btn = gr.Button("Generate")
         output_audio = gr.Audio(label="Speech Output")
 
-        text.submit(fn=tts, inputs=[text, model, voice, response_format, api_key, base_url], outputs=output_audio, api_name="tts_enter_key")
-        btn.click(fn=tts, inputs=[text, model, voice, response_format, api_key, base_url], outputs=output_audio, api_name="tts_button")
+        text.submit(fn=tts, inputs=[text, model, voice, response_format, speed, api_key, base_url], outputs=output_audio, api_name="tts_enter_key")
+        btn.click(fn=tts, inputs=[text, model, voice, response_format, speed, api_key, base_url], outputs=output_audio, api_name="tts_button")
 
     demo.launch(server_name=server_name, server_port=server_port, share=share)
 
