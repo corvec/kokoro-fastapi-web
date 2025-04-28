@@ -2,33 +2,10 @@ import gradio as gr
 import os, tempfile
 from openai import OpenAI
 
-def tts(text, model, voice, api_key, base_url=None):
-    if not api_key:
-        raise gr.Error('Please enter your OpenAI API Key')
-
-    try:
-        # Only use base_url if it's not empty
-        if base_url and base_url.strip():
-            client = OpenAI(api_key=api_key, base_url=base_url)
-        else:
-            client = OpenAI(api_key=api_key)
-
-        response = client.audio.speech.create(
-            model=model,
-            voice=voice,
-            input=text,
-        )
-
-    except Exception as error:
-        print(str(error))
-        raise gr.Error("An error occurred while generating speech. Please check your API key and try again.")
-
-    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
-        temp_file.write(response.content)
-
-    return temp_file.name
-
-openai_voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+server_name = os.getenv("SERVER_NAME", default="0.0.0.0")
+server_port = int(os.getenv("SERVER_PORT", default="7860"))
+default_api_key = os.getenv("OPENAI_API_KEY", default="not-needed")
+default_base_url = os.getenv("OPENAI_API_BASE_URL", default="http://localhost:8880/v1")
 kokoro_voices = [
     "af_alloy",
     "af_aoede",
@@ -99,12 +76,38 @@ kokoro_voices = [
     "zm_yunyang"
 ]
 
+def tts(text, model, voice, api_key, base_url=None):
+    if not api_key:
+        raise gr.Error('Please enter your OpenAI API Key')
+
+    try:
+        # Only use base_url if it's not empty
+        if base_url and base_url.strip():
+            client = OpenAI(api_key=api_key, base_url=base_url)
+        else:
+            client = OpenAI(api_key=api_key)
+
+        response = client.audio.speech.create(
+            model=model,
+            voice=voice,
+            input=text,
+        )
+
+    except Exception as error:
+        print(str(error))
+        raise gr.Error("An error occurred while generating speech. Please check your API key and try again.")
+
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+        temp_file.write(response.content)
+
+    return temp_file.name
+
 def gradio_interface():
     with gr.Blocks() as demo:
         gr.Markdown("# <center> Kokoro FastAPI Text-To-Speech </center>")
         with gr.Row(variant='panel'):
-            api_key = gr.Textbox(type='password', label='API Key', placeholder='Enter your OpenAI API key', value='not-needed')
-            base_url = gr.Textbox(label='API Base URL', placeholder='http://localhost:8880/v1', value='http://localhost:8880/v1')
+            api_key = gr.Textbox(type='password', label='API Key', placeholder='Enter your OpenAI API key', value=default_api_key)
+            base_url = gr.Textbox(label='API Base URL', placeholder='http://localhost:8880/v1', value=default_base_url)
             model = gr.Dropdown(choices=['tts-1','tts-1-hd'], label='Model', value='tts-1')
             voice = gr.Dropdown(choices=kokoro_voices, label='Voice Options', value=kokoro_voices[0])
 
@@ -115,7 +118,7 @@ def gradio_interface():
         text.submit(fn=tts, inputs=[text, model, voice, api_key, base_url], outputs=output_audio, api_name="tts_enter_key")
         btn.click(fn=tts, inputs=[text, model, voice, api_key, base_url], outputs=output_audio, api_name="tts_button")
 
-    demo.launch()
+    demo.launch(server_name=server_name, server_port=server_port)
 
 if __name__ == "__main__":
     gradio_interface()
