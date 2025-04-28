@@ -6,6 +6,7 @@ server_name = os.getenv("SERVER_NAME", default="0.0.0.0")
 server_port = int(os.getenv("SERVER_PORT", default="7860"))
 default_api_key = os.getenv("OPENAI_API_KEY", default="not-needed")
 default_base_url = os.getenv("OPENAI_API_BASE_URL", default="http://localhost:8880/v1")
+share = os.getenv("SHARE", default="false").lower() == "true"
 kokoro_voices = [
     "af_alloy",
     "af_aoede",
@@ -118,7 +119,7 @@ def gradio_interface():
         text.submit(fn=tts, inputs=[text, model, voice, api_key, base_url], outputs=output_audio, api_name="tts_enter_key")
         btn.click(fn=tts, inputs=[text, model, voice, api_key, base_url], outputs=output_audio, api_name="tts_button")
 
-    demo.launch(server_name=server_name, server_port=server_port)
+    demo.launch(server_name=server_name, server_port=server_port, share=share)
 
 if __name__ == "__main__":
     gradio_interface()
