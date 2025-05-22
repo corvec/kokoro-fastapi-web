@@ -1,0 +1,7 @@
+services:
+  kokoro-fastapi-web:
+    env_file: .env
+    build: .
+    image: "${DOCKER_REGISTRY:-docker.io}/kokoro-fastapi-web:${TAG:-latest}"
+    ports:
+      - "7860:7860"
